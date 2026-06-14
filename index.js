@@ -1,90 +1,91 @@
 import express from "express";
-import userRoutes from "./routes/users.js";
-import postRoutes from "./routes/posts.js";
-import authRoutes from "./routes/auth.js";
-import adminRoutes from "./routes/admin.js";
-import uploadRoutes from "./routes/upload.js";
-import tasksRoutes from "./routes/tasks.js";
+import helmet from "helmet";
 
-import dotenv from "dotenv";
+import path from "path";
+import { fileURLToPath } from "url";
+
+import adminRoutes from "./routes/admin.js";
+import authRoutes from "./routes/auth.js";
+import tasksRoute from "./routes/tasks.js";
+import uploadRoutes from "./routes/upload.js";
+import userRoutes from "./routes/users.js";
 
 import cors from "cors";
-import morgan from "morgan";
+import dotenv from "dotenv";
 import mongoose from "mongoose";
-import helmet from "helmet";
-import { logger } from "./Middlewares/logger.js";
-import { notFound } from "./Middlewares/notfound.js";
-import { errorHandler } from "./Middlewares/errorHandler.js";
-import swaggerUi from "swagger-ui-express";
-import { swaggerSpec } from "./utils/swagger.js";
-import { limiter } from "./Middlewares/rateLimiter.js";
-
-
+import morgan from "morgan";
+import { errorHandler } from "./middlewares/errorHandler.js";
+import { notFound } from "./middlewares/notfound.js";
 
 dotenv.config();
 
+import swaggerUi from "swagger-ui-express";
+import { limiter } from "./middlewares/rateLimiter.js";
+import { swaggerSpec } from "./utils/swagger.js";
+
 const app = express();
+const PORT = process.env.PORT || 5000;
+
+app.use(helmet());
 app.use(express.json());
+
 app.use(
   cors({
-    origin: ["http://localhost:52875", "https://dugsiiye.com/"],
+    origin: ["http://localhost:5173", "https://dugsiiye.com"],
   }),
 );
 
-if (process.env.NODE_ENV === "development") {
+app.use(limiter);
+
+if (process.env.NODE_ENV == "development") {
   app.use(morgan("dev"));
 }
 
-app.use(helmet());
-app.use(limiter);
-
-const PORT = process.env.PORT || 5000;
-
-
-
-app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-
-// Custom Middleware
-// app.use(logger);
+app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // routes middleware
-app.use("/users", userRoutes);
-app.use("/posts", postRoutes);
-app.use("/auth", authRoutes);
-app.use("/admin", adminRoutes);
-app.use("/upload", uploadRoutes);
-app.use("/tasks", tasksRoutes);
 
-// Main App Methods
+// diiwan gelin routes
+app.use("/api/users", userRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/admin", adminRoutes);
+app.use("/api/upload", uploadRoutes);
+app.use("/api/tasks", tasksRoute);
 
-// Method	Purpose
-
-// app.get()	Read data
-// app.post()	Create data
-// app.put()	Update data
-// app.delete()	Delete data
-// app.patch()	Partial update
-// app.all()	Handle all methods
-// app.use()	Middleware
-// app.listen()	Start server
-
-// GET route
-app.get("/", (req, res) => {
-  res.json(users);
+app.get("/api/health", (req, res) => {
+  res.json("Server is working... 😊");
 });
 
-// Not Found Middleware
+// Server fronted in Production
+
+if (process.env.NODE_ENV === "production") {
+  const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+  app.use(express.static(path.join(__dirname, "../frontend/dist")));
+
+  // Serve the frontend app
+
+  app.get(/.*/, (req, res) => {
+    res.send(path.join(__dirname, "..", "frontend", "dist", "index.html"));
+  });
+}
+
+// last route-level middleware
 app.use(notFound);
 
-// Last Middleware ErrorHandler
 app.use(errorHandler);
 
-// connect to Mongodb
+// connect to mongodb
+
 mongoose
-  .connect(process.env.NODE_ENV == 'development' ? process.env.MONGO_URI_DEV : process.env.MONGO_URI_PRO )
+  .connect(
+    process.env.NODE_ENV == "development"
+      ? process.env.MONGO_URI_DEV
+      : process.env.MONGO_URI_PRO,
+  )
   .then(() => console.log("✅ MongoDB connected locally"))
-  .catch((error) => console.log("❌ Connection error:", error));
+  .catch((err) => console.log("❌ Connection err:", err));
 
 app.listen(PORT, () => {
-  console.log(`Server is running on http://local:${PORT}`);
+  console.log(`Server is running on http://localhost:${PORT}`);
 });

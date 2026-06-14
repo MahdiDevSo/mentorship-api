@@ -1,12 +1,10 @@
 import express from "express";
-
 import { login, register } from "../controllers/auth.js";
-import { protect } from "../src/Middlewares/auth.js";
-import { validate } from "../src/Middlewares/validateZod.js";
+import { protect } from "../middlewares/auth.js";
+import { validate } from "../middlewares/validateZod.js";
 import { createUserSchema } from "../schemas/userSchema.js";
-const router = express.Router();
 
-// Register New User
+const router = express.Router();
 /**
  * @swagger
  * /auth/register:
@@ -34,15 +32,14 @@ const router = express.Router();
  *       201:
  *         description: User registered
  */
-
 router.post("/register", validate(createUserSchema), register);
-
 router.post("/login", login);
 
-// Protected route
+// Protected routes
 
-router.get("/profile", protect, (req, res) => {
+router.get("/me", protect, async (req, res) => {
   console.log("req.user", req.user);
+  // await new Promise(resolve => setTimeout(resolve, 5000))
   res.json(req.user);
 });
 

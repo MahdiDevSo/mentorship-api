@@ -1,5 +1,5 @@
 export const middleware = (req, res, next) => {
-  console.log("Middleware running");
+  console.log("middleware running");
 
   next();
 };

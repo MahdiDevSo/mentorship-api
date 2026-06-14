@@ -1,27 +1,26 @@
 import express from "express";
 import {
   createTask,
-  deleteTasks,
+  deleteTask,
   getMyTasks,
   updateTask,
-} from "../controllers/taskControllers.js";
-import { protect } from "../Middlewares/auth.js";
+} from "../controllers/taskController.js";
+import { protect } from "../middlewares/auth.js";
 
 const router = express.Router();
 
 /**
  * @swagger
  * /tasks:
- *   get:
- *     summary: Get all tasks for the logged-in user
- *     tags: [Tasks]
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: A list of tasks
+ *  get:
+ *      summary: Get All tasks for the logged-in user
+ *      tags: [Tasks]
+ *      security:
+ *         - bearerAuth: []
+ *      responses:
+ *          200:
+ *             description: A List of tasks
  */
-
 router.get("/", protect, getMyTasks);
 
 /**
@@ -56,7 +55,6 @@ router.get("/", protect, getMyTasks);
  */
 
 router.post("/", protect, createTask);
-
 /**
  * @swagger
  * /tasks/{id}:
@@ -89,6 +87,7 @@ router.post("/", protect, createTask);
  *       200:
  *         description: Task updated
  */
+
 router.put("/:id", protect, updateTask);
 
 /**
@@ -110,8 +109,7 @@ router.put("/:id", protect, updateTask);
  *       200:
  *         description: Task deleted
  */
+router.delete("/:id", protect, deleteTask);
 
-router.delete("/:id", protect, deleteTasks);
-
-// Export the router
+// export the router
 export default router;

@@ -17,7 +17,7 @@ import { notFound } from "./Middlewares/notfound.js";
 import { errorHandler } from "./Middlewares/errorHandler.js";
 import swaggerUi from "swagger-ui-express";
 import { swaggerSpec } from "./utils/swagger.js";
-import { limiter } from "./middlewares/rateLimiter.js";
+import { limiter } from "./Middlewares/rateLimiter.js";
 
 
 

@@ -1,6 +1,6 @@
 import express from "express";
-import { protect } from "../middlewares/auth.js";
-import { authorize } from "../middlewares/authorize.js";
+import { protect } from "../src/Middlewares/auth.js";
+import { authorize } from "../src/Middlewares/authorize.js";
 
 const router = express.Router();
 

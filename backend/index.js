@@ -1,6 +1,7 @@
 import express from "express";
 import helmet from "helmet";
 
+
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -31,7 +32,7 @@ app.use(express.json());
 
 app.use(
   cors({
-    origin: ["http://localhost:5173", "https://dugsiiye.com"],
+    origin: ["http://localhost:5173", "http://localhost:5000"],
   }),
 );
 
@@ -56,7 +57,7 @@ app.get("/api/health", (req, res) => {
   res.json("Server is working... 😊");
 });
 
-// Server fronted in Production
+// Server frontend in Production
 
 if (process.env.NODE_ENV === "production") {
   const __dirname = path.dirname(fileURLToPath(import.meta.url));

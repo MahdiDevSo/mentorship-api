@@ -4,6 +4,11 @@ export const createTask = async (req, res, next) => {
   try {
     const task = await Task.create({ ...req.body, createdBy: req.user._id });
     res.status(201).json(task);
+    // const task = await Task.create({
+    //   ...req.body,
+    //   createdBy: "6a26c0e8ef084aecb279b29b",
+    // });
+    res.status(201).json(task);
   } catch (error) {
     next(error);
   }
@@ -14,6 +19,9 @@ export const getMyTasks = async (req, res, next) => {
     const tasks = await Task.find({ createdBy: req.user._id }).sort({
       createdAt: -1,
     });
+    // const tasks = await Task.find().sort({
+    //   createdAt: -1,
+    // });
     res.json(tasks);
   } catch (error) {
     next(error);
